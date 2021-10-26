@@ -2,9 +2,10 @@ const {Transform} = require('stream');
 const manhattanDistance = require('../manhattan_distance/manhattan')
 const sortWords = require('../sort/sort')
 class MethodsTransform extends Transform {
-    constructor(action) {
+    constructor(action, endless) {
         super();
         this.action = action;
+        this.endless = endless;
     }
     _transform(chunk, encoding, callback) {
         let answer = "";
@@ -17,6 +18,7 @@ class MethodsTransform extends Transform {
                 break;
         }
         this.push("Результат: " + answer + "\n");
+        this.endless ? process.exit(1) : 
         callback();
     }
 }

@@ -7,16 +7,17 @@ const  MethodsTransform  = require("./helpers/transform");
 const pipeline = util.promisify(stream.pipeline);
 
 const actionHandler = async () => {
-    let { input, output, action } = program.opts();
-    const ReadableStream = process.stdin;
-    const WriteableStream = process.stdout;
+    let { input, output, action, endless } = program.opts();
+    const ReadableStream = input ? fs.createReadStream(input) : process.stdin;
+    const WriteableStream = output ? fs.createWriteStream(output) : process.stdout;
     try {
         await pipeline(
             ReadableStream,
-            new MethodsTransform(action),
+            new MethodsTransform(action, endless),
             WriteableStream
         )
-    } catch (error) {
+    } 
+    catch (error) {
         process.stderr.write(`${error.message}`)
     }
 }
@@ -28,6 +29,7 @@ program
   .requiredOption("-a, --action <action>", "Сhoice of sort/manhattan")
   .option("-i, --input <filename>", "An input file")
   .option("-o, --output <filename>", "An output file")
+  .option("-e, --endless", "Not endless execution")
   .action(actionHandler);
 
 program.parse(process.argv);
